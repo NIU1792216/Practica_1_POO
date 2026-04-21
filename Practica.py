@@ -2,40 +2,6 @@ from datetime import date, datetime
 from abc import ABC, abstractmethod
 import tkinter as tk
 
-class creaModel():
-    def __init__(self, controller):
-        self._controller = controller
-        self._root = tk.Tk()
-        self._root.title("Creador de models")
-        self._opcio = tk.StringVar(value="Cotxe")
-        self._rbt1 = tk.Radiobutton(self._root, text="Cotxe", variable=self._opcio, value="Cotxe")
-        self._rbt2 = tk.Radiobutton(self._root, text="Moto", variable=self._opcio, value="Moto")
-        self._nom_entry = tk.Entry(self._root)
-        self._electric_entry = tk.Entry(self._root)
-        self._cilindrada_entry = tk.Entry(self._root)
-        #numeroDePortes:int, tipusCanviMarxes:str, tipusCombustible:str, tipusrodes, carnetnecesari
-        self._num_portes_entry = tk.Entry(self._root)
-        self._tipus_canvi_entry = tk.Entry(self._root)
-        self._tipus_combustible_entry = tk.Entry(self._root)
-        self._tipus_rodes_entry = tk.Entry(self._root)
-        self._carnet_entry = tk.Entry(self._root)
-        self._submit = tk.Button(text="Create new model", command=self.afegir)
-    def run(self):
-        self._root.mainloop()
-    def afegir(self)->None:
-        nom = self._nom_entry.get()
-        electric = self._electric_entry.get()    
-        cilindrada = self._cilindrada_entry.get()
-        if self._opcio == "Cotxe":
-            num_portes = self._num_portes_entry.get()
-            tipus_canvi = self._tipus_canvi_entry.get()
-            tipus_combustible = self._tipus_combustible_entry.get()
-            self._controller.afegir(0, nom, electric, cilindrada, num_portes, tipus_canvi, tipus_combustible)
-        else:
-            tipus_rodes = self._tipus_rodes_entry.get()
-            carnet = self._carnet_entry.get()
-            self._controller.afegir(1, nom, electric, cilindrada, tipus_rodes, carnet)        
-
 class Subministrador():
     def __init__(self, nom:str, CIF:str, adreca:str, pais:str):
         self._nom = nom
@@ -210,8 +176,78 @@ class Fabrica():
             quantitat_disponible = self._inventari.numExistenciesPeca(codi_peca)
             if quantitat_disponible < quantitat_necessaria:
                 return False
-        return True
-           
+        return True   
+
+class Controlador():
+    def __init__(self, fabrica:Fabrica):
+        self._fabrica = fabrica
+    def afegir(self, tipus:int, nom:str, electric:bool, cilindrada:int, numPortes:int=0, tipusCanvi:str="", tipusCombustible:str="", tipusRodes:str="", carnetNecessari:str="")->None:
+        if tipus == 0:
+            """
+            Comprovem que tots els atributs necesaris per crear el model son correctes (en quant al tipus)
+            """
+            #self._fabrica.afegirModelCotxe(nom, electric, cilindrada, numPortes, tipusCanvi, tipusCombustible)
+            return
+        if tipus == 1:
+            """
+            Comprovem que tots els atributs necesaris per crear el model son correctes (en quant al tipus)
+            """
+            #self._fabrica.afegirModelMoto(nom, electric, cilindrada, tipusRodes, carnetNecessari)
+            return
+
+class creaModel():
+    def __init__(self, controller:Controlador):
+        self._controller = controller
+        self._root = tk.Tk()
+        self._root.title("Creador de models")
+        self._opcio = tk.StringVar(value="Cotxe")
+        self._rbt1 = tk.Radiobutton(self._root, text="Cotxe", variable=self._opcio, value="Cotxe")
+        self._rbt2 = tk.Radiobutton(self._root, text="Moto", variable=self._opcio, value="Moto")
+        self._rbt1.pack()
+        self._rbt2.pack()
+        tk.Label(self._root, text="Name:").pack()
+        self._nom_entry = tk.Entry(self._root)
+        self._nom_entry.pack()
+        tk.Label(self._root, text="Electric(0/1):").pack()
+        self._electric_entry = tk.Entry(self._root)
+        self._electric_entry.pack()
+        tk.Label(self._root, text="Cilindrada (int):").pack()
+        self._cilindrada_entry = tk.Entry(self._root)
+        self._cilindrada_entry.pack()
+        tk.Label(self._root, text="Numero de portes (int):").pack()
+        self._num_portes_entry = tk.Entry(self._root)
+        self._num_portes_entry.pack()
+        tk.Label(self._root, text="Tipus de canvi (Manual/Automatic):").pack()
+        self._tipus_canvi_entry = tk.Entry(self._root)
+        self._tipus_canvi_entry.pack()
+        tk.Label(self._root, text="Tipus de combustible:").pack()
+        self._tipus_combustible_entry = tk.Entry(self._root)
+        self._tipus_combustible_entry.pack()
+        tk.Label(self._root, text="Tipus de rodes:").pack()
+        self._tipus_rodes_entry = tk.Entry(self._root)
+        self._tipus_rodes_entry.pack()
+        tk.Label(self._root, text="Carnet necessari:").pack()
+        self._carnet_entry = tk.Entry(self._root)
+        self._carnet_entry.pack()
+        self._submit = tk.Button(text="Create new model", command=self.afegir)
+        self._submit.pack()
+    def run(self):
+        self._root.mainloop()
+    def afegir(self)->None:
+        nom = self._nom_entry.get()
+        electric = bool(self._electric_entry.get())
+        cilindrada = float(self._cilindrada_entry.get())
+        if self._opcio.get() == "Cotxe":
+            num_portes = int(self._num_portes_entry.get())
+            tipus_canvi = self._tipus_canvi_entry.get()
+            tipus_combustible = self._tipus_combustible_entry.get()
+            self._controller.afegir(0, nom, electric, cilindrada, numnum_portes, tipus_canvi, tipus_combustible)
+        else:
+            tipus_rodes = self._tipus_rodes_entry.get()
+            carnet = self._carnet_entry.get()
+            self._controller.afegir(1, nom, electric, cilindrada, tipus_rodes, carnet)        
+
+
 if __name__ == "__main__":
     fabrica = Fabrica("Honda")
     prov_michelin = Subministrador("Michelin", "11111111C", "c/ Tour Eiffel sn", "Paris, França")
@@ -247,3 +283,7 @@ if __name__ == "__main__":
     ]
     for peca, quantitat in dades_inventari:
         fabrica._inventari.afegirPeca(peca, quantitat)
+    
+    controller = Controlador(fabrica)
+    vista = creaModel(controller)
+    vista.run()
