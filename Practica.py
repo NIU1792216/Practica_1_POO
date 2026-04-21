@@ -6,10 +6,36 @@ class creaModel():
     def __init__(self, controller):
         self._controller = controller
         self._root = tk.Tk()
-        self._root.title("vista")
-        self._
-        self._bt1 = tk.Radiobutton(self._root, text="Cotxe")
-        self._bt2 = tk.Radiobutton(self._root, text="Moto")
+        self._root.title("Creador de models")
+        self._opcio = tk.StringVar(value="Cotxe")
+        self._rbt1 = tk.Radiobutton(self._root, text="Cotxe", variable=self._opcio, value="Cotxe")
+        self._rbt2 = tk.Radiobutton(self._root, text="Moto", variable=self._opcio, value="Moto")
+        self._nom_entry = tk.Entry(self._root)
+        self._electric_entry = tk.Entry(self._root)
+        self._cilindrada_entry = tk.Entry(self._root)
+        #numeroDePortes:int, tipusCanviMarxes:str, tipusCombustible:str, tipusrodes, carnetnecesari
+        self._num_portes_entry = tk.Entry(self._root)
+        self._tipus_canvi_entry = tk.Entry(self._root)
+        self._tipus_combustible_entry = tk.Entry(self._root)
+        self._tipus_rodes_entry = tk.Entry(self._root)
+        self._carnet_entry = tk.Entry(self._root)
+        self._submit = tk.Button(text="Create new model", command=self.afegir)
+    def run(self):
+        self._root.mainloop()
+    def afegir(self)->None:
+        nom = self._nom_entry.get()
+        electric = self._electric_entry.get()    
+        cilindrada = self._cilindrada_entry.get()
+        if self._opcio == "Cotxe":
+            num_portes = self._num_portes_entry.get()
+            tipus_canvi = self._tipus_canvi_entry.get()
+            tipus_combustible = self._tipus_combustible_entry.get()
+            self._controller.afegir(0, nom, electric, cilindrada, num_portes, tipus_canvi, tipus_combustible)
+        else:
+            tipus_rodes = self._tipus_rodes_entry.get()
+            carnet = self._carnet_entry.get()
+            self._controller.afegir(1, nom, electric, cilindrada, tipus_rodes, carnet)        
+
 class Subministrador():
     def __init__(self, nom:str, CIF:str, adreca:str, pais:str):
         self._nom = nom
@@ -58,14 +84,11 @@ class InventariPeces():
         return peces_proveidor
 
 class ModelVehicle(ABC):
-    def __init__(self, nomModel:str, electric:bool, cilindrada:int, peces:dict=None):
+    def __init__(self, nomModel:str, electric:bool, cilindrada:int, peces:dict={}):
         self._nomModel = nomModel
         self._electric = electric
         self._cilindrada = cilindrada
-        if peces is None:
-            self._peces = {}
-        else:
-            self._peces = peces
+        self._peces = peces
     def pecesNecessaries(self)->dict:
         return self._peces
     def afegirPeca(self, peca: Peca, quantitat: int, opcional: bool = False, posicio: int = 0) -> None:
@@ -82,7 +105,7 @@ class ModelVehicle(ABC):
    
    
 class ModelCotxe(ModelVehicle):
-    def __init__(self, nomModel:str, electric:bool, cilindrada:int, numeroDePortes:int, tipusCanviMarxes:str, tipusCombustible:str, peces:dict=None):
+    def __init__(self, nomModel:str, electric:bool, cilindrada:int, numeroDePortes:int, tipusCanviMarxes:str, tipusCombustible:str, peces:dict={}):
         super().__init__(nomModel, electric, cilindrada, peces)
         self._numeroDePortes = numeroDePortes
         self._tipusCanviMarxes = tipusCanviMarxes
@@ -99,7 +122,7 @@ class ModelCotxe(ModelVehicle):
        
    
 class ModelMoto(ModelVehicle):
-    def __init__(self, nomModel:str, electric:bool, cilindrada:int, tipusRodes:str, carnetNecessari:str, peces:dict=None):
+    def __init__(self, nomModel:str, electric:bool, cilindrada:int, tipusRodes:str, carnetNecessari:str, peces:dict={}):
         super().__init__(nomModel, electric, cilindrada, peces)
         self._tipusRodes = tipusRodes
         self._carnetNecessari = carnetNecessari
